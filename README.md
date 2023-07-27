@@ -1,2 +1,2 @@
-# shorthorror
+# Microhorror
 Really Short Horror Stories
