@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Really Short Horror Stories</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: black;
+      color: white;
+    }
+    #quote {
+      font-size: 24px;
+      margin: 20px;
+    }
+    .noselect {
+      user-select: none;
+    }
+    footer {
+      margin-top: 20px;
+    }
+    footer a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Really Short Horror Stories</h1>
+  <div class="noselect" id="quote"></div>
+
+  <footer>
+    <a href="https://www.boredpanda.com/one-line-horror-stories" target="_blank">Bored Panda</a>
+    <a href="https://thoughtcatalog.com/michael-koh/2013/07/40-freaking-creepy-ass-two-sentence-stories" target="_blank">Thought Catalog</a>
+  </footer>
+
+  <script>
+    async function fetchQuotes(source) {
+      const response = await fetch(source);
+      const data = await response.json();
+      return data;
+    }
+
+    async function getRandomQuoteFromSource(source) {
+      const quotes = await fetchQuotes(source);
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      return quotes[randomIndex].Quotes; // Get the "Quotes" property from the object
+    }
+
+    let currentQuoteIndex = 0;
+    let currentSource = Math.random() < 0.5 ? 'quotesFromBoredPanda.json' : 'quotesFromThoughtCatalog.json';
+    
+    async function displayQuote(index) {
+      const source = currentSource;
+      const quotes = await fetchQuotes(source);
+      if (index >= 0 && index < quotes.length) {
+        quoteElement.textContent = quotes[index].Quotes;
+        currentQuoteIndex = index;
+      }
+    }
+
+    async function displayNextQuote() {
+      const source = currentSource;
+      const quotes = await fetchQuotes(source);
+      currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+      displayQuote(currentQuoteIndex);
+    }
+
+    async function displayPreviousQuote() {
+      const source = currentSource;
+      const quotes = await fetchQuotes(source);
+      currentQuoteIndex = (currentQuoteIndex - 1 + quotes.length) % quotes.length;
+      displayQuote(currentQuoteIndex);
+    }
+
+    async function displayRandomQuote() {
+      const source = Math.random() < 0.5 ? 'quotesFromBoredPanda.json' : 'quotesFromThoughtCatalog.json';
+      currentSource = source;
+      const quotes = await fetchQuotes(source);
+      currentQuoteIndex = Math.floor(Math.random() * quotes.length);
+      displayQuote(currentQuoteIndex);
+    }
+
+    const quoteElement = document.getElementById("quote");
+    document.addEventListener("click", displayNextQuote);
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") {
+        displayPreviousQuote();
+      } else if (event.key === "ArrowRight") {
+        displayNextQuote();
+      } else if (event.key === " ") { // Spacebar
+        displayRandomQuote();
+      }
+    });
+
+    // Initial quote generation
+    displayQuote(currentQuoteIndex);
+  </script>
+</body>
+</html>
